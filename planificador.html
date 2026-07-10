@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Planificador Espiritual Mensual</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link id="manifest-link" rel="manifest" href="">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f0fdfa; }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+        .print-only { display: none; }
+        @media print {
+            body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .no-print { display: none !important; }
+            .print-only { display: block; }
+            .glass-panel { box-shadow: none; border: 1px solid #e2e8f0; }
+            #calendar-grid { gap: 2px; }
+            .day-cell { border: 1px solid #e2e8f0; }
+        }
+    </style>
+</head>
+<body class="text-slate-800 h-screen flex flex-col overflow-hidden">
+
+    <header class="bg-teal-700 text-white shadow-lg p-4 z-10 no-print flex-shrink-0">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <svg class="w-8 h-8 text-amber-300" fill="currentColor" viewBox="0 0 20 20"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/></svg>
+                <h1 class="text-xl md:text-2xl font-bold tracking-tight">Planificador Espiritual</h1>
+            </div>
+            <div class="flex gap-2">
+                <button id="btn-install" class="hidden bg-amber-400 hover:bg-amber-500 text-teal-900 font-semibold py-2 px-4 rounded-lg transition shadow-md text-sm md:text-base flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Instalar App
+                </button>
+                <button onclick="window.print()" class="bg-teal-600 hover:bg-teal-500 text-white font-semibold py-2 px-4 rounded-lg transition shadow-md text-sm md:text-base flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    Imprimir
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow overflow-y-auto custom-scrollbar p-2 md:p-4">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-4 h-full">
+            
+            <!-- Columna Izquierda: Metas -->
+            <div class="lg:col-span-3 space-y-4">
+                <div class="glass-panel rounded-xl shadow-md p-4 border-t-4 border-teal-600 h-full flex flex-col">
+                    <h2 class="text-lg font-bold text-teal-800 mb-4 flex items-center gap-2 uppercase tracking-wide">
+                        <svg class="w-5 h-5 text-teal-600" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"></path></svg>
+                        Nuestras Metas
+                    </h2>
+                    
+                    <!-- Metas Individuales -->
+                    <div class="mb-6 flex-grow">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="font-semibold text-slate-700">Individuales</h3>
+                            <button onclick="addGoal('individual')" class="text-teal-600 hover:text-teal-800 no-print" title="Añadir Meta">+</button>
+                        </div>
+                        <ul id="list-individual" class="space-y-2 text-sm">
+                            <!-- Llenado por JS -->
+                        </ul>
+                    </div>
+
+                    <!-- Metas Familiares -->
+                    <div class="flex-grow">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="font-semibold text-slate-700">Familiares</h3>
+                            <button onclick="addGoal('family')" class="text-teal-600 hover:text-teal-800 no-print" title="Añadir Meta">+</button>
+                        </div>
+                        <ul id="list-family" class="space-y-2 text-sm">
+                            <!-- Llenado por JS -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Central: Calendario -->
+            <div class="lg:col-span-6 flex flex-col h-full">
+                <div class="glass-panel rounded-xl shadow-md p-4 flex-grow flex flex-col border-t-4 border-amber-400">
+                    <!-- Controles del Mes -->
+                    <div class="flex justify-between items-center mb-4">
+                        <button onclick="changeMonth(-1)" class="p-2 text-teal-700 hover:bg-teal-100 rounded-full no-print">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </button>
+                        <h2 id="month-year-display" class="text-xl md:text-2xl font-bold text-slate-800 uppercase tracking-wider text-center"></h2>
+                        <button onclick="changeMonth(1)" class="p-2 text-teal-700 hover:bg-teal-100 rounded-full no-print">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- Cuadrícula del Calendario -->
+                    <div class="grid grid-cols-7 gap-1 md:gap-2 text-center text-xs md:text-sm font-semibold text-teal-800 mb-2">
+                        <div>LUN</div><div>MAR</div><div>MIÉ</div><div>JUE</div><div>VIE</div><div>SÁB</div><div>DOM</div>
+                    </div>
+                    <div id="calendar-grid" class="grid grid-cols-7 gap-1 md:gap-2 flex-grow auto-rows-fr">
+                        <!-- Generado por JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Precursorado y Ministerio -->
+            <div class="lg:col-span-3 space-y-4 h-full flex flex-col">
+                <!-- Precursorado -->
+                <div class="glass-panel rounded-xl shadow-md p-4 border-t-4 border-amber-400 flex-grow">
+                    <h2 class="text-lg font-bold text-slate-800 mb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"></path></svg>
+                        Precursorado
+                    </h2>
+                    <div class="mb-4 no-print">
+                        <label class="text-sm text-slate-600 block mb-1">Meta de horas mensual:</label>
+                        <select id="goal-selector" onchange="updateProgress()" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-sm focus:ring-teal-500 focus:border-teal-500">
+                            <option value="15">15 Horas (Auxiliar especial)</option>
+                            <option value="30">30 Horas (Auxiliar)</option>
+                            <option value="50">50 Horas (Regular)</option>
+                        </select>
+                    </div>
+                    <div class="bg-slate-100 rounded-lg p-3 text-center mb-4 border border-slate-200">
+                        <span class="block text-sm text-slate-500 uppercase tracking-wide">Total del Mes</span>
+                        <span id="total-hours" class="text-3xl font-bold text-teal-700">0</span>
+                        <span class="text-sm text-slate-600">hrs</span>
+                    </div>
+                    <!-- Barra de Progreso -->
+                    <div class="w-full bg-slate-200 rounded-full h-3 mb-1">
+                        <div id="progress-bar" class="bg-amber-400 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                    <p id="progress-text" class="text-xs text-slate-500 text-right mb-4">0% completado</p>
+                </div>
+
+                <!-- Ministerio de Campo Notas -->
+                <div class="glass-panel rounded-xl shadow-md p-4 border-t-4 border-teal-600 flex-grow">
+                    <h2 class="text-lg font-bold text-teal-800 mb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path></svg>
+                        Ministerio de Campo
+                    </h2>
+                    <textarea id="ministry-notes" onchange="saveData()" class="w-full h-32 bg-slate-50 border border-slate-300 rounded p-2 text-sm focus:ring-teal-500 focus:border-teal-500 resize-none custom-scrollbar" placeholder="Notas sobre revisitas, cursos bíblicos, territorios..."></textarea>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="day-modal" class="hidden fixed inset-0 bg-slate-900 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+            <h3 id="modal-title" class="text-xl font-bold text-teal-800 mb-4 border-b pb-2">Actividad del Día</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Horas de Predicación</label>
+                    <input type="number" id="modal-hours" min="0" step="0.5" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500 focus:border-teal-500" placeholder="Ej. 2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Actividad o Notas (Opcional)</label>
+                    <input type="text" id="modal-notes" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-teal-500 focus:border-teal-500" placeholder="Ej. Adoración en familia, Carrito...">
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end gap-3">
+                <button onclick="closeModal()" class="px-4 py-2 text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg font-medium transition">Cancelar</button>
+                <button onclick="saveDay()" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium shadow transition">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Mensaje de Sistema (Reemplazo de Alert) -->
+    <div id="msg-modal" class="hidden fixed inset-0 bg-slate-900 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 text-center">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-teal-100 mb-4">
+                <svg class="h-6 w-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <h3 id="msg-title" class="text-lg font-bold text-slate-800 mb-2">Mensaje</h3>
+            <p id="msg-text" class="text-sm text-slate-600 mb-6"></p>
+            <button onclick="document.getElementById('msg-modal').classList.add('hidden')" class="w-full px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium shadow transition">Entendido</button>
+        </div>
+    </div>
+
+    <script>
+        // ESTADO DE LA APLICACIÓN
+        let currentDate = new Date();
+        let currentDayEditing = null;
+        let appData = {
+            goalsIndividual: [
+                { id: 'i1', text: 'Lectura bíblica diaria', done: false },
+                { id: 'i2', text: 'Oración constante', done: false },
+                { id: 'i3', text: 'Preparar la Atalaya', done: false }
+            ],
+            goalsFamily: [
+                { id: 'f1', text: 'Adoración en Familia Semanal', done: false },
+                { id: 'f2', text: 'Mejorar comentarios en la reunión', done: false }
+            ],
+            daysData: {}, // Formato: "YYYY-MM-DD": { hours: 2, notes: "Texto" }
+            ministryNotes: "",
+            goalHours: 50
+        };
+
+        // INICIALIZACIÓN
+        window.onload = function() {
+            setupPWA();
+            loadData();
+            renderCalendar();
+            renderGoals();
+            document.getElementById('ministry-notes').value = appData.ministryNotes || "";
+            document.getElementById('goal-selector').value = appData.goalHours || "50";
+            updateProgress();
+        };
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            // Título del mes
+            const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            document.getElementById('month-year-display').textContent = `${monthNames[month]} ${year}`;
+
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+
+            // Cálculos de días
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            // Ajustar para que la semana empiece en Lunes (1) en vez de Domingo (0)
+            let startOffset = firstDay === 0 ? 6 : firstDay - 1;
+
+            // Días vacíos iniciales
+            for (let i = 0; i < startOffset; i++) {
+                grid.innerHTML += `<div class="bg-slate-50/50 rounded-lg"></div>`;
+            }
+
+            // Días del mes
+            const today = new Date();
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                const data = appData.daysData[dateString] || { hours: 0, notes: "" };
+                
+                let isToday = (i === today.getDate() && month === today.getMonth() && year === today.getFullYear());
+                let todayClasses = isToday ? "border-2 border-teal-500 bg-teal-50" : "bg-white border border-slate-200 hover:border-teal-400";
+                
+                let contentHTML = `
+                    <div onclick="openModal('${dateString}', ${i})" class="day-cell flex flex-col p-1 md:p-2 rounded-lg cursor-pointer transition shadow-sm ${todayClasses} min-h-[60px] md:min-h-[80px] overflow-hidden group">
+                        <span class="text-right text-xs font-bold ${isToday ? 'text-teal-700' : 'text-slate-500'} group-hover:text-teal-600">${i}</span>
+                `;
+
+                if (data.hours > 0) {
+                    contentHTML += `<div class="mt-auto bg-amber-100 text-amber-800 text-[10px] md:text-xs font-bold rounded px-1 py-0.5 text-center mb-1 shadow-sm">${data.hours} hrs</div>`;
+                }
+                if (data.notes) {
+                    contentHTML += `<div class="text-[9px] md:text-[10px] text-teal-700 truncate text-center bg-teal-100/50 rounded px-1">${data.notes}</div>`;
+                }
+
+                contentHTML += `</div>`;
+                grid.innerHTML += contentHTML;
+            }
+        }
+
+        function changeMonth(delta) {
+            currentDate.setMonth(currentDate.getMonth() + delta);
+            renderCalendar();
+            updateProgress();
+        }
+
+        function openModal(dateStr, dayNum) {
+            currentDayEditing = dateStr;
+            const data = appData.daysData[dateStr] || { hours: '', notes: '' };
+            
+            const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            document.getElementById('modal-title').textContent = `${dayNum} de ${monthNames[currentDate.getMonth()]}`;
+            document.getElementById('modal-hours').value = data.hours || '';
+            document.getElementById('modal-notes').value = data.notes || '';
+            
+            document.getElementById('day-modal').classList.remove('hidden');
+            document.getElementById('modal-hours').focus();
+        }
+
+        function closeModal() {
+            document.getElementById('day-modal').classList.add('hidden');
+            currentDayEditing = null;
+        }
+
+        function saveDay() {
+            if (!currentDayEditing) return;
+            
+            const hoursVal = parseFloat(document.getElementById('modal-hours').value) || 0;
+            const notesVal = document.getElementById('modal-notes').value.trim();
+
+            if (hoursVal === 0 && notesVal === "") {
+                delete appData.daysData[currentDayEditing];
+            } else {
+                appData.daysData[currentDayEditing] = { hours: hoursVal, notes: notesVal };
+            }
+
+            saveData();
+            closeModal();
+            renderCalendar();
+            updateProgress();
+        }
+
+        function renderGoals() {
+            const renderList = (items, elementId, type) => {
+                const ul = document.getElementById(elementId);
+                ul.innerHTML = '';
+                items.forEach((item, index) => {
+                    ul.innerHTML += `
+                        <li class="flex items-start gap-2 p-1 hover:bg-slate-50 rounded group">
+                            <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleGoal('${type}', ${index})" class="mt-1 rounded text-teal-600 focus:ring-teal-500 w-4 h-4 cursor-pointer">
+                            <span class="${item.done ? 'line-through text-slate-400' : 'text-slate-700'} flex-grow cursor-pointer" onclick="toggleGoal('${type}', ${index})">${item.text}</span>
+                            <button onclick="deleteGoal('${type}', ${index})" class="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 no-print" title="Eliminar">×</button>
+                        </li>
+                    `;
+                });
+            };
+            renderList(appData.goalsIndividual, 'list-individual', 'individual');
+            renderList(appData.goalsFamily, 'list-family', 'family');
+        }
+
+        function toggleGoal(type, index) {
+            const list = type === 'individual' ? appData.goalsIndividual : appData.goalsFamily;
+            list[index].done = !list[index].done;
+            saveData();
+            renderGoals();
+        }
+
+        function deleteGoal(type, index) {
+            const list = type === 'individual' ? appData.goalsIndividual : appData.goalsFamily;
+            list.splice(index, 1);
+            saveData();
+            renderGoals();
+        }
+
+        function addGoal(type) {
+            // Usamos un modal en lugar de prompt()
+            const msgTitle = document.getElementById('msg-title');
+            const msgText = document.getElementById('msg-text');
+            
+            // Construimos un pequeño input dentro del modal de mensajes temporalmente
+            msgTitle.textContent = "Añadir Nueva Meta";
+            msgText.innerHTML = `
+                <input type="text" id="new-goal-input" class="w-full border border-slate-300 rounded p-2 focus:ring-teal-500" placeholder="Escribe tu meta aquí...">
+                <button id="btn-save-goal" class="mt-4 w-full bg-teal-600 text-white rounded p-2">Añadir</button>
+            `;
+            
+            const modal = document.getElementById('msg-modal');
+            modal.classList.remove('hidden');
+            
+            setTimeout(() => document.getElementById('new-goal-input').focus(), 100);
+
+            document.getElementById('btn-save-goal').onclick = function() {
+                const text = document.getElementById('new-goal-input').value.trim();
+                if (text) {
+                    const list = type === 'individual' ? appData.goalsIndividual : appData.goalsFamily;
+                    list.push({ id: Date.now().toString(), text: text, done: false });
+                    saveData();
+                    renderGoals();
+                }
+                modal.classList.add('hidden');
+                // Restaurar el modal de mensaje a su estado original
+                setTimeout(() => { msgText.innerHTML = ""; }, 300);
+            };
+        }
+
+        function updateProgress() {
+            const year = currentDate.getFullYear();
+            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+            const prefix = `${year}-${month}`;
+            
+            let totalHours = 0;
+            for (let date in appData.daysData) {
+                if (date.startsWith(prefix)) {
+                    totalHours += appData.daysData[date].hours || 0;
+                }
+            }
+
+            const goal = parseInt(document.getElementById('goal-selector').value) || 50;
+            appData.goalHours = goal;
+            saveData();
+
+            document.getElementById('total-hours').textContent = totalHours;
+            
+            let percentage = (totalHours / goal) * 100;
+            if (percentage > 100) percentage = 100;
+            
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+            document.getElementById('progress-text').textContent = `${Math.round(percentage)}% completado`;
+        }
+
+        function saveData() {
+            appData.ministryNotes = document.getElementById('ministry-notes').value;
+            localStorage.setItem('planificadorTeocratico', JSON.stringify(appData));
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('planificadorTeocratico');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    appData = { ...appData, ...parsed }; // Merge default with saved
+                } catch (e) {
+                    console.error("Error cargando datos", e);
+                }
+            }
+        }
+
+        function showMessage(title, text) {
+            document.getElementById('msg-title').textContent = title;
+            document.getElementById('msg-text').textContent = text;
+            document.getElementById('msg-modal').classList.remove('hidden');
+        }
+
+        let deferredPrompt;
+        
+        function setupPWA() {
+            // 1. Inyectar Manifest Dinámicamente para que el navegador lo reconozca
+            const manifestData = {
+                "name": "Planificador Espiritual Mensual",
+                "short_name": "Planificador",
+                "start_url": window.location.href,
+                "display": "standalone",
+                "background_color": "#f0fdfa",
+                "theme_color": "#0f766e",
+                "icons": [{
+                    "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230f766e'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='white'>📖</text></svg>",
+                    "sizes": "192x192",
+                    "type": "image/svg+xml",
+                    "purpose": "any maskable"
+                }]
+            };
+            const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/manifest+json'});
+            document.getElementById('manifest-link').href = URL.createObjectURL(manifestBlob);
+
+            // 2. Escuchar el evento de instalación de Android/Chrome
+            window.addEventListener('beforeinstallprompt', (e) => {
+                // Prevenir que Chrome muestre el prompt automáticamente
+                e.preventDefault();
+                // Guardar el evento para dispararlo luego
+                deferredPrompt = e;
+                // Mostrar nuestro botón de instalación en la UI
+                document.getElementById('btn-install').classList.remove('hidden');
+            });
+
+            // 3. Configurar el botón de instalación
+            document.getElementById('btn-install').addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        document.getElementById('btn-install').classList.add('hidden');
+                    }
+                    deferredPrompt = null;
+                } else {
+                    showMessage("Información", "Tu navegador no soporta la instalación directa o ya instalaste la aplicación. En iOS, usa 'Compartir' -> 'Añadir a la pantalla de inicio'.");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
